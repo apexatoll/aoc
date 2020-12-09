@@ -10,62 +10,45 @@
 #ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 #pid (Passport ID) - a nine-digit number, including leading zeroes.
 #cid (Country ID) - ignored, missing or not.
+	#"hgt:(1(([5-8][0-9])(9[0-3]))cm|((59)(6[0-9])(7[0-6]))in)"
 
 format=$(cat input | tr '\n' ';' | sed 's/;;/\n/g' | sed 's/;/ /g')
 nLines=$(printf "%s\n" "$format" | wc -l)
 valid=0
+invalid=0
 regex=(
-	#"^.*byr:(19[2-9][0-9]|200[0-2]).*$"#does not work
-	"^.*iyr:20(1[0-9]|20).*$"
-	#"^.*eyr:20(2[0-9]|30).*$"
-	#"^.*hgt:(1([5-8][0-9]|9[0-3])cm|(59|6[0-9]|7[1-6])in).*$"
-	#"^.*hcl:#[0-9a-f]{6}.*$"
-	#"^.*ecl:(amb|blu|brn|gry|grn|hzl|oth).*$"
-	#"^.*pid:[0-9]{9}.*$"
+	"byr:(19[2-9][0-9]|200[0-2])"
+	"iyr:20(1[0-9]|20)"
+	"eyr:20(2[0-9]|30)"
+	"hgt:(1(([5-8][0-9])|(9[0-3]))cm|((59)|(6[0-9])|(7[0-6]))in)"
+	"hcl:#[0-9a-f]{6}"
+	"ecl:(amb|blu|brn|gry|grn|hzl|oth)"
+	"pid:[0-9]{9}"
 )
-echo ${!regex[@]}
-invalid=()
-valarr=()
 checkRegex(){
 	for j in ${!regex[@]}; do
-		#regex="^.*${fields[$j]}:.+$"
-		echo $1 | grep -E "${regex[$j]}" > /dev/null || return 1
+		echo "$1" | grep -E "^.*${regex[$j]}.*$" > /dev/null || { field="$j"; return 1; }
+		#echo "$1" | grep -E "^.*${regex[$j]}.*$" > /dev/null && let regCount+=1
 	done
-	return 0
+	#if [ "$regCount" == 7 ]; then
+		return 0
+	#else
+		#return 1j;
+	#fi
 }
-for i in $(seq 1 30); do 
+for i in $(seq 1 $nLines); do 
 	line=$(printf "$format" | sed -n "$i"p)
 	numFields=$(echo $line | awk '{print NF}')
 	count="$i"
 	case $numFields in 
-		7 | 8) checkRegex "$line" && let valid+=1 && valarr+=("$i") || invalid+=("$i");;
-		*)invalid+=("$i")
+		7|8) checkRegex "$line" && { echo $line; echo valid; let valid+=1; echo $valid; } || { echo $line ; echo "invalid $(echo ${regex[$field]} | sed -E 's/^.*(byr|iyr|eyr|hgt|hcl|ecl|pid).*$/\1/')" ; };;
+		#*) checkRegex "$line" && { echo $line; echo valid; let valid+=1; echo $valid; } || { echo $line ; echo "invalid $(echo ${regex[$field]} | sed -E 's/^.*(byr|iyr|eyr|hgt|hcl|ecl|pid).*$/\1/')" ; };;
+		#7|8) checkRegex "$line" && { echo $line; echo valid; let valid+=1; echo $valid; };;
+		#7|8) checkRegex "$line" || { echo $line ; echo "invalid $(echo ${regex[$field]} | sed -E 's/^.*(byr|iyr|eyr|hgt|hcl|ecl|pid).*$/\1/')" ; };;
+
+		#7|8) checkRegex "$line" && let valid+=1 || let invalid+=1;;
+		#*) let invalid+=1
 	esac
 done
-#echo $valid
-
-invalcount=0
-valcount=0
-#invalids
-echo invalid
-for i in ${!invalid[@]}; do
-	line=$(printf "$format" | sed -n "${invalid[$i]}"p)
-	echo $line
-	let invalcount+=1
-done
-echo $invalcount
-
-#valids
-echo valid
-for i in ${!valarr[@]}; do
-	line=$(printf "$format" | sed -n "${valarr[$i]}"p)
-	echo $line
-	let valcount+=1
-done
-echo $valcount
-
-
-
-
-
-
+echo $valid
+echo $invalid
