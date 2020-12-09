@@ -1,0 +1,17 @@
+#!/bin/bash
+
+lines=$(cat input | wc -l)
+totalValid=0
+for i in $(seq 1 $lines); do
+	line=$(sed -n "$i"p input)
+	range=$(echo $line | awk -F " " '{print $1}')
+	pos1=$(echo $range | awk -F "-" '{print $1}')
+	pos2=$(echo $range | awk -F "-" '{print $2}')
+	char=$(echo $line | awk '{print $2}' | sed 's/://g')
+	pass=$(echo $line | awk '{print $3}')
+	gap1=$((pos1 - 1))
+	gap2=$((pos2 - pos1 - 1))
+	reg="^(.{$gap1}$char.{$gap2}[^$char]|.{$gap1}[^$char].{$gap2}$char).*"
+	echo $pass | grep -E "$reg" > /dev/null && totalValid=$((totalValid + 1))
+done
+echo $totalValid

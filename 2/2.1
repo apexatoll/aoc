@@ -1,0 +1,15 @@
+#!/bin/bash
+
+lines=$(cat input | wc -l)
+validTotal=0
+for i in $(seq 1 $lines); do
+	line=$(cat input | sed -n "$i"p)
+	range=$(echo $line | awk '{print $1}')
+	min=$(echo $range | awk -F "-" '{print $1}')
+	max=$(echo $range | awk -F "-" '{print $2}')
+	char=$(echo $line | awk '{print $2}' | sed 's/://g')
+	pass=$(echo $line | awk '{print $3}')
+	regex="^([^$char]*$char[^$char]*){$min,$max}$"
+	echo $pass | grep -E "$regex" > /dev/null && validTotal=$((validTotal + 1))
+done
+echo $validTotal

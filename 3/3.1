@@ -1,0 +1,22 @@
+#!/bin/bash
+
+xTot=$(($(sed -n 1p input | wc -m) - 1))
+yTot=$(cat input | wc -l)
+xMove=3
+yMove=1
+xPos=1
+yPos=1
+trees=0
+while [ "$yPos" -le "$yTot" ]; do
+	xPos=$((xPos + xMove))
+	yPos=$((yPos + yMove))
+	if [ "$xPos" -gt "$xTot" ] ; then
+		xPos=$((xPos - xTot))
+	fi
+	line=$(sed -n "$yPos"p input)
+	coord=${line:$((xPos - 1)):1}
+	if [ "$coord" == "#" ]; then
+		trees=$((trees + 1))
+	fi
+done
+echo $trees

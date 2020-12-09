@@ -1,0 +1,30 @@
+#!/bin/bash
+
+lines=$(cat input | wc -l)
+valid=0
+invalid=0
+#for i in $(seq 1 $lines); do
+for i in $(seq 1 $lines); do
+	line=$(cat input | sed -n "$i"p)
+	range=$(echo $line | awk -F " " '{print $1}')
+	min=$(echo $range | awk -F "-" '{print $1}')
+	max=$(echo $range | awk -F "-" '{print $2}')
+	search=$(echo $line | awk '{print $2}' | sed 's/://g')
+	pass=$(echo $line | awk '{print $3}')
+	reg="^([^$search]*$search[^$search]*){$min,$max}$"
+	#echo $reg
+	if [ ! -z $(echo $pass | grep --extended-regexp "$reg") ]; then 
+		isValid=1
+		valid=$((valid + 1))
+	else
+		isValid=0
+		invalid=$((invalid + 1))
+	fi
+	echo $pass, $min, $max, $search, $isValid
+	#if [ "$pass" =~ "$reg" ]; then
+		#echo valid
+	#fi
+	#echo $pass | grep -E "$reg" || invalid=$((invalid + 1))
+done
+echo $valid
+echo $invalid

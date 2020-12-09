@@ -1,0 +1,19 @@
+#!/bin/bash
+
+in=$(cat input | tr "\n" " ")
+num=$(echo $in | awk '{print NF}')
+
+for i in $(seq 1 $num); do 
+	a=$(echo $in | awk -v var=$i '{print $var}')
+	for j in $(seq 1 $num); do
+		if [ "$j" != "$i" ]; then
+			b=$(echo $in | awk -v var=$j '{print $var}')
+			out=$((a + b))
+			if [ $out == 2020 ]; then
+				result=$((a * b))
+				echo $result
+				exit
+			fi
+		fi
+	done
+done

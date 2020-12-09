@@ -1,0 +1,71 @@
+#!/bin/bash
+#byr (Birth Year) - four digits; at least 1920 and at most 2002.
+#iyr (Issue Year) - four digits; at least 2010 and at most 2020.
+#eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
+#hgt (Height) - a number followed by either cm or in:
+#"^.*(1([5-8][0-9]|9[0-3])cm|(59|6[0-9]|7[1-6])in).*$"
+#If cm, the number must be at least 150 and at most 193.
+#If in, the number must be at least 59 and at most 76.
+#hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
+#ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
+#pid (Passport ID) - a nine-digit number, including leading zeroes.
+#cid (Country ID) - ignored, missing or not.
+
+format=$(cat input | tr '\n' ';' | sed 's/;;/\n/g' | sed 's/;/ /g')
+nLines=$(printf "%s\n" "$format" | wc -l)
+valid=0
+regex=(
+	#"^.*byr:(19[2-9][0-9]|200[0-2]).*$"#does not work
+	"^.*iyr:20(1[0-9]|20).*$"
+	#"^.*eyr:20(2[0-9]|30).*$"
+	#"^.*hgt:(1([5-8][0-9]|9[0-3])cm|(59|6[0-9]|7[1-6])in).*$"
+	#"^.*hcl:#[0-9a-f]{6}.*$"
+	#"^.*ecl:(amb|blu|brn|gry|grn|hzl|oth).*$"
+	#"^.*pid:[0-9]{9}.*$"
+)
+echo ${!regex[@]}
+invalid=()
+valarr=()
+checkRegex(){
+	for j in ${!regex[@]}; do
+		#regex="^.*${fields[$j]}:.+$"
+		echo $1 | grep -E "${regex[$j]}" > /dev/null || return 1
+	done
+	return 0
+}
+for i in $(seq 1 30); do 
+	line=$(printf "$format" | sed -n "$i"p)
+	numFields=$(echo $line | awk '{print NF}')
+	count="$i"
+	case $numFields in 
+		7 | 8) checkRegex "$line" && let valid+=1 && valarr+=("$i") || invalid+=("$i");;
+		*)invalid+=("$i")
+	esac
+done
+#echo $valid
+
+invalcount=0
+valcount=0
+#invalids
+echo invalid
+for i in ${!invalid[@]}; do
+	line=$(printf "$format" | sed -n "${invalid[$i]}"p)
+	echo $line
+	let invalcount+=1
+done
+echo $invalcount
+
+#valids
+echo valid
+for i in ${!valarr[@]}; do
+	line=$(printf "$format" | sed -n "${valarr[$i]}"p)
+	echo $line
+	let valcount+=1
+done
+echo $valcount
+
+
+
+
+
+
