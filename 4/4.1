@@ -6,15 +6,11 @@ fields=("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid" )
 valid=0
 checkRegex(){
 	for j in ${!fields[@]}; do
-		regex="^.*${fields[$j]}:.+$"
-		echo $1 | grep -E "$regex" > /dev/null || return 1
+		echo $1 | grep -E "${fields[$j]}:.+(\s|$)" > /dev/null || return 1
 	done; return 0
 }
 for i in $(seq 1 $nLines); do 
 	line=$(printf "$format" | sed -n "$i"p)
-	numFields=$(echo $line | awk '{print NF}')
-	case $numFields in 
-		7 | 8) checkRegex "$line" && let valid+=1;;
-	esac
+	checkRegex "$line" && let valid+=1
 done
 echo $valid
