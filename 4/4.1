@@ -8,8 +8,7 @@ checkRegex(){
 	for j in ${!fields[@]}; do
 		regex="^.*${fields[$j]}:.+$"
 		echo $1 | grep -E "$regex" > /dev/null || return 1
-	done
-	return 0
+	done; return 0
 }
 for i in $(seq 1 $nLines); do 
 	line=$(printf "$format" | sed -n "$i"p)
