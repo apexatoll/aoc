@@ -1,0 +1,10 @@
+#!/bin/bash
+./5.1 > "IDs"
+min=$(tail -n 2 IDs | sed -n 1p)
+max=$(tail -n 1 IDs)
+seat="$min"
+for i in $(seq $min $max); do
+	grep -E "^$i" IDs > /dev/null && let seat+=1 || break
+done
+rm IDs
+echo $seat
