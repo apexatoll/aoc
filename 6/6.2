@@ -1,0 +1,17 @@
+#!/bin/bash
+
+format=$(awk -v RS= '$1=$1' input) 
+nLines=$(printf "%s\n" "$format" | wc -l)
+aDigit=$(printf "%d" \'a)
+zDigit=$(printf "%d" \'z)
+valid=0
+for i in $(seq 1 $nLines); do
+	line=$(printf "$format" | sed -n "$i"p)
+	nPeople=$(echo $line | awk -F"[ |\n]" '{print NF}')
+	for j in $(seq $aDigit $zDigit); do
+		char=$(echo $j | awk '{printf("%c", $1)}')
+		regex="^(.*?$char.*?(\s|$)){$nPeople}"
+		echo $line | grep -E "$regex" > /dev/null && let valid+=1
+	done
+done
+echo $valid

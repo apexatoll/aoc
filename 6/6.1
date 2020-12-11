@@ -1,0 +1,15 @@
+#!/bin/bash
+
+format=$(awk -v RS= '$1=$1' input | sed 's/ //g' | tr -s 'a-z')
+nLines=$(printf "%s\n" "$format" | wc -l)
+total=0
+unique(){
+	multi=$(echo "$1" | sed -E 's/(.)/\1\n/g')
+	count=$(printf "%s\n" "$multi" | sort | uniq | wc -l)
+}
+for i in $(seq 1 $nLines); do
+	line=$(printf "$format" | sed -n "$i"p)
+	unique "$line"
+	let total+="$count"
+done
+echo $total
