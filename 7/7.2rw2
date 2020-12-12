@@ -1,14 +1,14 @@
 #!/bin/bash
 
 source ~/.bin/ansi-escape
-level=0
+level=1
 loop(){
 	in=("$@")
 	unset search
-	let level+=1
 	echo level $level contains:
 	printf "%s\n" "${in[@]}"
 	while [ ${#in[@]} -gt 0 ]; do
+		let level+=1
 		printf "%s\n" "${red}searching level $level${norm}"
 		for i in ${!in[@]}; do
 			printf "%s\n" "${yell}bag:: ${in[$i]}${norm}"
@@ -36,42 +36,3 @@ loop "${search[@]}"
 for i in $(seq $level 1); do
 	echo returning from level $i
 done
-#echo these bags are in the tree somewhere
-#printf "%s\n" "${intree[@]}" | sort | uniq
-#echo these bags are empty
-#printf "%s\n" "${oners[@]}" | sort | uniq
-#for i in ${!oners[@]}; do
-#for i in ${!intree[@]}; do
-	#echo ${intree[$i]}
-	#for j in ${!oners[@]}; do
-		
-	#done
-	##[[ "${oners[@]}" =~  "${intree[$i]}" ]] && unset ${intree[$i]}
-#done
-#echo these bags need to be calculated
-#printf "%s\n" "${intree[@]}" | sort | uniq
-
-#loop(){
-	#in=("$@")
-	#unset search
-	#while [ ${#in[@]} -gt 0 ]; do
-		#let level+=1
-		#echo searching level $level
-		#for i in ${!in[@]}; do
-			#printf "%s\n" "${yell}bag:: ${in[$i]}${norm}"
-			#line=$(grep -E "^${in[$i]}" input)
-			#if echo $line | grep "no other bags" > /dev/null; then 
-				#echo dead end at ${in[$i]}
-				#oners+=("${in[$i]}")
-			#else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
-				#for j in ${!contents[@]}; do
-					#bag=$(echo ${contents[$j]} | sed -E 's/^[0-9]* (.*) (bag|bags)$/\1/g')
-					#num=$(echo ${contents[$j]} | sed -E 's/[^0-9]//g')
-					#search+=("$bag")
-					#echo contains $bag $num times
-				#done
-			#fi
-		#done
-		#loop "${search[@]}"
-	#done
-#}
