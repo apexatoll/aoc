@@ -8,10 +8,8 @@ treeSum=1
 
 for i in ${!xArr[@]}; do
 	trees=0
-	xPos=1
-	yPos=1
-	xMove=${xArr[$i]}
-	yMove=${yArr[$i]}
+	xPos=1; yPos=1
+	xMove=${xArr[$i]}; yMove=${yArr[$i]}
 	while [ "$yPos" -le "$yTot" ]; do
 		yPos=$((yPos + $yMove))
 		xPos=$((xPos + $xMove))

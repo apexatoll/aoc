@@ -2,10 +2,8 @@
 
 xTot=$(($(sed -n 1p input | wc -m) - 1))
 yTot=$(cat input | wc -l)
-xMove=3
-yMove=1
-xPos=1
-yPos=1
+xMove=3; yMove=1
+xPos=1; yPos=1
 trees=0
 while [ "$yPos" -le "$yTot" ]; do
 	xPos=$((xPos + xMove))
