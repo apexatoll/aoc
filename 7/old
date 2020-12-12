@@ -1,38 +1,39 @@
 #!/bin/bash
-
 source ~/.bin/ansi-escape
-level=0
+level=1; count=0
 loop(){
 	in=("$@")
 	unset search
-	let level+=1
-	while [ "${#in[@]}" -gt 0 ]; do
-		echo in while loop
-		intree+=("level $level")
-		printf "%s\n" "${red}searching level $level${norm}"
+	while [ ${#in[@]} -gt 0 ]; do
+		let level+=1
 		for i in ${!in[@]}; do
-			printf "%s\n" "${yell}bag:: ${in[$i]}${norm}"
 			line=$(grep -E "^${in[$i]}" input)
-			#echo $line
 			if echo $line | grep "no other bags" > /dev/null; then 
-				oners+=("${in[$i]}")
+				empty+=("${in[$i]}")
 			else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
 				for j in ${!contents[@]}; do
 					bag=$(echo ${contents[$j]} | sed -E 's/^[0-9]* (.*) (bag|bags)$/\1/g')
 					num=$(echo ${contents[$j]} | sed -E 's/[^0-9]//g')
 					search+=("$bag")
-					intree+=("$bag")
-					echo contains $bag $num times
+					thislevel+=("$bag")
 				done
 			fi
 		done
 		loop "${search[@]}"
 	done
 }
-search=("shiny gold")
-loop "${search[@]}"
-#count
-for i in $(seq $level 1); do
-	echo returning from level $i
-done
-printf "%s\n" "${intree[@]}"
+#loopback(){
+	#in=("$@")
+	#printf "%s\n" "${thislevel[@]}" | sort | uniq
+	#echo; echo
+	#echo empty bags:
+	#printf "%s\n" "${in[@]}"
+#}
+#search=("shiny gold")
+#loop "${search[@]}"
+#IFS=$'\n' read -rd '' -a empty<<<$(printf "%s\n" "${empty[@]}" | sort | uniq) 
+##echo ${#empty[@]}
+#loopback "${empty[@]}"
+##for i in $(seq $level 1); do
+	##echo returning from level $i
+##done

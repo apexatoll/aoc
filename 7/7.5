@@ -1,0 +1,44 @@
+#!/bin/bash
+
+source ~/.bin/ansi-escape
+loop=1
+count=0
+nested=1
+declare -A bagValues
+main(){
+	echo Searching shiny gold...
+	chain=("shiny gold")
+	recurse "$chain"
+}
+recurse(){
+	echo input: $1; echo loop: $loop
+	line=$(grep "^$1" input)
+	if echo $line | grep "no other" > /dev/null; then
+		printf "%s -> " "${yell}${chain[@]}${norm}"; echo
+		printf "%s\n" "${red}$1 is empty${norm}"
+		unset chain[-1]
+		printf "%s -> " "${yell}${chain[@]}${norm}"; echo
+		#let count+="$num"
+		#echo count is now at $count
+		echo chain complete
+	else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)(\.|,)$/\1/g; s/bags?//g; s/, /;/g')
+		printf "%s -> " "${yell}${chain[@]}${norm}"
+		echo
+		printf "%s$1 holds: %s\n" "${bold}" "${norm}$(printf "%s" "${contents[@]}")"
+		for i in ${!contents[@]}; do
+			echo $i
+			read -r num bag <<< "${contents[$i]}"
+			chain+=("$bag($num)")
+			recurse "$bag"
+			echo iteration complete; echo
+		done
+		printf "%s -> " "${yell}${chain[@]}${norm}"; echo 
+		echo loop complete
+		unset chain[-1]
+		printf "%s -> " "${yell}${chain[@]}${norm}"; echo; echo
+		echo; echo;
+	fi
+	let loop+=1
+	echo; echo;
+}
+main; exit

@@ -1,0 +1,113 @@
+#!/bin/bash
+
+loop=1
+declare -A bagValues
+main(){
+	tree "shiny gold"
+}
+tree(){
+	echo $loop
+	line=$(grep "^$1" input)
+	if echo $line | grep "no other"; then
+		echo this bag is empty
+	else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
+		chain+=("$1")
+		printf "%s\n" "${contents[@]}"
+		echo ${chain[@]}
+	fi
+	let loop+=1
+}
+main; exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	#while [ "${#in[@]}" -gt 0 ]; do
+		#intree+=("level $level")
+		#printf "%s\n" "${red}searching level $level${norm}"
+		#for i in ${!in[@]}; do
+			#printf "%s\n" "${yell}bag:: ${in[$i]}${norm}"
+			#line=$(grep -E "^${in[$i]}" input)
+
+
+
+
+
+
+
+
+			#if bag=$(echo $line | grep "no other bags" > /dev/null); then 
+				#bag=$(echo )
+				#bag=$(echo )
+				#bagContents[]
+
+
+			#else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
+				#for j in ${!contents[@]}; do
+					#bag=$(echo ${contents[$j]} | sed -E 's/^[0-9]* (.*) (bag|bags)$/\1/g')
+					#num=$(echo ${contents[$j]} | sed -E 's/[^0-9]//g')
+					#search+=("$bag")
+					#intree+=("$num $bag")
+					#echo contains $bag $num times
+				#done
+			#fi
+		#done
+		#inTree "${search[@]}"
+	#done
+#}
+
+#getBagValues(){
+
+#}
+#loop(){
+
+#}
+
+
+#loop(){
+	#in=("$@")
+	#unset search
+	#let level+=1
+	#while [ "${#in[@]}" -gt 0 ]; do
+		#echo in while loop
+		#intree+=("level $level")
+		#printf "%s\n" "${red}searching level $level${norm}"
+		#for i in ${!in[@]}; do
+			#printf "%s\n" "${yell}bag:: ${in[$i]}${norm}"
+			#line=$(grep -E "^${in[$i]}" input)
+			#if echo $line | grep "no other bags" > /dev/null; then 
+				#oners+=("${in[$i]}")
+			#else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
+				#for j in ${!contents[@]}; do
+					#bag=$(echo ${contents[$j]} | sed -E 's/^[0-9]* (.*) (bag|bags)$/\1/g')
+					#num=$(echo ${contents[$j]} | sed -E 's/[^0-9]//g')
+					#search+=("$bag")
+					#intree+=("$num $bag")
+					#echo contains $bag $num times
+				#done
+			#fi
+		#done
+		#loop "${search[@]}"
+	#done
+#}
+#search=("shiny gold")
+#loop "${search[@]}"
+##count
+#for i in $(seq $level 1); do
+	#echo returning from level $i
+#done
+#printf "%s\n" "${intree[@]}"
