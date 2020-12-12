@@ -1,0 +1,20 @@
+#!/bin/bash
+
+main(){
+	search=("shiny gold")
+	recurse "${search[@]}"
+	count=$(printf "%s\n" "${all[@]}" | sort | uniq | wc -l)
+	echo $count
+}
+recurse(){
+	unset out; in=("$@")
+	while [ ${#in[@]} -gt 0 ]; do
+		for i in ${!in[@]}; do
+			IFS=$'\n' read -rd '' -a temp <<<$(grep -E "^.*contain.*${in[$i]}" input | sed 's/ bags contain.*$//')
+			out=("${out[@]}" "${temp[@]}")
+		done
+		all=("${all[@]}" "${out[@]}")
+		recurse "${out[@]}"
+	done
+}
+main; exit

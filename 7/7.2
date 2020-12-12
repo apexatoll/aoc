@@ -1,0 +1,29 @@
+#!/bin/bash
+
+recurse(){
+	unset out; 
+	in=("$@")
+	#while [ ${#in[@]} -gt 0 ]; do
+		for i in ${!in[@]}; do
+			echo searching ${in[$i]}
+			echo contains
+			IFS=";" read -rd '' -a out<<<$(grep -E "^${in[$i]}" input | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
+			for j in ${!out[@]}; do
+				nums+=("$(echo ${out[$j]} | sed 's/[^0-9]//g')")
+				bags+=("$(echo ${out[$j]} | sed -E 's/^[0-9]* (.*)(bag|bags)/\1/g')")
+				#echo "$num :: $bags"
+			done
+			echo ${nums[1]}
+			echo ${bags[1]}
+		done
+		#all=("${all[@]}" "${out[@]}")
+		#recurse "${out[@]}"
+	#done
+}
+
+search=("shiny gold")
+recurse "${search[@]}"
+#printf "%s\n" "${out[@]}"
+#recurse "${out[@]}"
+#printf "%s\n" "${out[@]}"
+

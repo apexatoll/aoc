@@ -1,0 +1,79 @@
+#!/bin/bash
+source ~/.bin/ansi-escape
+#original(){
+	#unset out; in=("$@")
+	#while [ ${#in[@]} -gt 0 ]; do
+		#for i in ${!in[@]}; do
+			#IFS=$'\n' read -rd '' -a temp <<<$(grep -E "^.*contain.*${in[$i]}" input | sed 's/ bags contain.*$//')
+			#out=("${out[@]}" "${temp[@]}")
+		#done
+		#all=("${all[@]}" "${out[@]}")
+		#recurse "${out[@]}"
+	#done
+#}
+loop(){
+	in=("$@")
+	unset search
+	while [ ${#in[@]} -gt 0 ]; do
+		for i in ${!in[@]}; do
+			printf "%s\n" "${yell}bag:: ${in[$i]}${norm}"
+			line=$(grep -E "^${in[$i]}" input)
+			if echo $line | grep "no other bags" > /dev/null; then 
+				echo dead end at ${in[$i]}
+				oners+=("${in[$i]}")
+			else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
+				for j in ${!contents[@]}; do
+					bag=$(echo ${contents[$j]} | sed -E 's/^[0-9]* (.*) (bag|bags)$/\1/g')
+					num=$(echo ${contents[$j]} | sed -E 's/[^0-9]//g')
+					search+=("$bag")
+					echo contains $bag $num times
+				done
+			fi
+		done
+		loop "${search[@]}"
+	done
+}
+search=("shiny gold")
+loop "${search[@]}"
+#loop(){
+	#in=("$@")
+	#unset search
+	#for i in ${!in[@]}; do
+		#printf "%s\n" "${yell}bag:: ${in[$i]}${norm}"
+		#line=$(grep -E "^${in[$i]}" input)
+		#if echo $line | grep "no other bags" > /dev/null; then 
+			#oners+=("${in[$i]}")
+		#else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
+			#for j in ${!contents[@]}; do
+				#bag=$(echo ${contents[$j]} | sed -E 's/^[0-9]* (.*) (bag|bags)$/\1/g')
+				#num=$(echo ${contents[$j]} | sed -E 's/[^0-9]//g')
+				#echo contains $bag $num times
+				#search+=("$bag")
+			#done
+		#fi
+	#done
+#}
+#search=("shiny gold")
+#level=1
+#while [ ${#search[@]} -gt 0 ]; do
+	#printf "%s\n" "${yell}${bold}searching level $level${norm}"
+	#echo searching...
+	#loop "${search[@]}"
+	#echo; echo
+	#echo Next search...
+	#printf "%s\n" "${red}${search[@]}${norm}"
+	#let level+=1
+#done
+#echo these equal 1....
+#printf "%s\n" "${oners[@]}" | sort | uniq
+recurse(){
+	unset out; in=("$@")
+	while [ ${#in[@]} -gt 0 ]; do
+		for i in ${!in[@]}; do
+			IFS=$'\n' read -rd '' -a temp <<<$(grep -E "^.*contain.*${in[$i]}" input | sed 's/ bags contain.*$//')
+			out=("${out[@]}" "${temp[@]}")
+		done
+		all=("${all[@]}" "${out[@]}")
+		recurse "${out[@]}"
+	done
+}

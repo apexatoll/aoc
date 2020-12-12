@@ -1,0 +1,10 @@
+#!/bin/bash
+
+while read -r a; do
+	while read -r b; do
+		while read -r c; do
+			d=$((a + b + c))
+			if [ $d == 2020 ]; then echo $((a * b * c)); exit; fi
+		done < input
+	done < input
+done < input
