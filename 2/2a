@@ -3,7 +3,6 @@
 valid=0
 while read -r line; do
 	range=$(echo $line | sed -E 's/^([0-9]*)\-([0-9]*).*$/\1,\2/g')
-	#echo $range
 	char=$(echo $line | awk '{print $2}' | sed 's/://g')
 	pass=$(echo $line | awk '{print $3}')
 	regex="^([^$char]*$char[^$char]*){$range}$"
