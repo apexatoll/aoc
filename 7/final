@@ -1,0 +1,30 @@
+#!/bin/bash
+
+in=("shiny gold")
+count=1
+
+loop(){
+	in=("$@")
+	unset search
+	let level+=1
+	while [ "${#in[@]}" -gt 0 ]; do
+		for i in ${!in[@]}; do
+			line=$(grep -E "^${in[$i]}" input)
+			if echo $line | grep "no other bags" > /dev/null; then 
+				oners+=("${in[$i]}")
+			else IFS=";" read -rd '' -a contents<<<$(echo $line | sed -E 's/^.*bags contain (.*)\.$/\1/g; s/, /;/g')
+				for j in ${!contents[@]}; do
+					bag=$(echo ${contents[$j]} | sed -E 's/^[0-9]* (.*) (bag|bags)$/\1/g')
+					num=$(echo ${contents[$j]} | sed -E 's/[^0-9]//g')
+					search+=("$bag")
+					intree+=("$bag")
+					echo contains $bag $num times
+				done
+			fi
+		unset search
+		done
+		loop "${search[@]}"
+	done
+}
+search=("shiny gold")
+loop "${search[@]}"
