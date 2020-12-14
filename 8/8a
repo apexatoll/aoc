@@ -1,0 +1,22 @@
+#!/bin/bash
+
+index=1; acc=0; ran=()
+nNop=0
+nJmp=1
+while [ "${ran[$index]}" != true ]; do
+	ran[$index]=true
+	line=$(sed -n "$index"p  input)
+	x=$(echo "$line" | sed -E 's/^[^-^+^0-9]*//g')
+	case $line in 
+		nop*) let index+=1
+			let nNop+=1;;
+		acc*) let index+=1; acc=$(echo "$acc$x" | bc);;
+		jmp*) index=$(echo "$index$x" | bc)
+		 let nJmp+=1;;
+	esac
+done
+
+echo $acc
+#printf "%s\n" "${!ran[@]}"
+echo num of nops = $nNop
+echo num of jmps = $nJmp
