@@ -33,7 +33,6 @@ class Image
 		@flipped = true
 	end
 end
-
 class Images
 	attr_accessor :images, :n_pieces, :n_solved, :side, :matches, :corners, :grid, :oriented
 	def initialize(images)
@@ -56,9 +55,6 @@ class Images
 		end
 		count_matches
 		to_flip = @images.select{|id, img| img.flipped == false}.keys
-		#to_flip.each do |id|
-			
-		#end
 	end
 	def count_matches
 		@matches = Hash.new
@@ -86,12 +82,6 @@ class Images
 		@matches.each do |id, m|
 			if m[:inverted] == 0
 				@images[id].flipped_correctly
-			else
-				@oriented = false
-			#elsif m[:current] == 0
-				#puts "Flipping #{id} as 0 matches in current flip"
-				#@images[id].flip
-				#@images[id].flipped_correctly
 			end
 		end
 		puts "Matches:"

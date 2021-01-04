@@ -1,7 +1,7 @@
 class Image 
 	attr_accessor :id, :image, :borders
 	def initialize(image)
-		@id = image.split("\n").slice!(0).gsub(/[^0-9]/, "")
+		@id = image.split("\n").slice!(0).gsub(/[^0-9]/, "").to_i
 		@image = image.split("\n").drop(1)
 		@borders = Array.new
 		l_border = @image.map{|line| line[0]}.join
@@ -58,3 +58,6 @@ images = Images.new(File.open("input").read.split("\n\n"))
 images.count_matches
 images.find_corners
 puts images.calc_corners
+print images.matches; puts
+print images.corners
+
