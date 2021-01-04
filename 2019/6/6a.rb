@@ -1,0 +1,38 @@
+$input = File.open("example").read.split("\n")
+
+def countOrbits(input)
+count = 0
+	children = $input.grep(/^#{input}\)/)
+	if children.size == 0
+		return 0
+	else
+		#count += children.size
+		#for i in 0..children.size - 1
+			#children[i] = children[i].to_s.gsub(/^.*\)/, "")
+		#end
+		#children.each do |child|
+			#count += countOrbits(child) + children.size
+		#end
+		#return count
+	end
+end
+
+countall = countOrbits("COM")
+puts countall
+
+#count(){
+	#tot=0
+	#if grep -E "^$1.*no other" input > /dev/null; then echo 0;
+	#else
+		#line=$(grep -E "^$1" input)
+		#IFS=";" read -rd '' -a inner<<<$(echo $line | sed -E 's/^.*contain (.*)\.$/\1/g; s/, /;/g')
+		#for i in ${!inner[@]}; do
+			#bag=$(echo ${inner[$i]} | sed -E 's/^[0-9]* (.*) bags?$/\1/')
+			#num=$(echo ${inner[$i]} | sed -E 's/[^0-9]*//g')
+			#tot=$((tot + num))
+			#tot=$((tot + num * $(count "$bag")))
+		#done
+		#echo $tot
+	#fi
+#}
+#count "shiny gold"

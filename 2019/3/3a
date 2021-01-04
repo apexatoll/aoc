@@ -1,0 +1,72 @@
+#!/bin/bash
+
+IFS="," read -rd '' -a wire1 <<< $(sed -n 1p input)
+IFS="," read -rd '' -a wire2 <<< $(sed -n 2p input)
+wire1coords=()
+wire2coords=()
+matches=()
+x=0; y=0
+for i in ${!wire1[@]}; do
+	cmd=${wire1[$i]}
+	num=$(echo $cmd | sed 's/[^0-9]//g')
+	case $cmd in
+		L*) newx=$((x - num));;
+		R*) newx=$((x + num));;
+		D*) newy=$((y - num));;
+		U*) newy=$((y + num));;
+	esac
+	case $cmd in 
+		L*|R*)  for j in $(seq $x $newx);do
+					coord="$j,$y"
+					wire1coords+=("$coord")
+				done
+				newy=$y;;
+		D*|U*)  for j in $(seq $y $newy); do
+					coord="$x,$j"
+					wire1coords+=("$coord")
+				done
+				newx=$x;;
+	esac
+	x=$newx y=$newy
+done
+IFS=$'\n' read -rd '' -a wire1coords <<< $(printf "%s\n" "${wire1coords[@]}"| sort | uniq)
+x=0; y=0
+for i in ${!wire2[@]}; do
+	cmd=${wire2[$i]}
+	num=$(echo $cmd | sed 's/[^0-9]//g')
+	case $cmd in
+		L*) newx=$((x - num));;
+		R*) newx=$((x + num));;
+		D*) newy=$((y - num));;
+		U*) newy=$((y + num));;
+	esac
+	case $cmd in 
+		L*|R*)  for j in $(seq $x $newx);do
+					coord="$j,$y"
+					wire2coords+=("$coord")
+				done 
+				newy=$y
+				;;
+		D*|U*)  for j in $(seq $y $newy); do
+					coord="$x,$j"
+					wire2coords+=("$coord")
+				done
+				newx=$x
+				;;
+	esac
+	x=$newx y=$newy
+done
+IFS=$'\n' read -rd '' -a wire2coords <<< $(printf "%s\n" "${wire2coords[@]}"| sort | uniq)
+IFS=$'\n' read -rd '' -a matches <<< $(echo "${wire1coords[@]} ${wire2coords[@]}" | tr ' ' '\n' | sort | uniq -d )
+distances=()
+for i in ${!matches[@]}; do
+	xc=$(echo ${matches[$i]} | sed 's/,.*$//g')
+	yc=$(echo ${matches[$i]} | sed 's/^.*,//g')
+	if [ $xc -lt 0 ]; then xc=$((xc * -1)); fi
+	if [ $yc -lt 0 ]; then yc=$((yc * -1)); fi
+	distance=$((xc + yc))
+	distances+=("$distance")
+done
+IFS=$'\n' read -rd '' -a distances <<< $(printf "%s\n" "${distances[@]}" | sort -n)
+result=${distances[1]}
+echo $result

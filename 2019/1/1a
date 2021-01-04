@@ -1,0 +1,9 @@
+#!/bin/bash
+
+IFS=$'\n' read -rd '' -a lines<<<$(cat input)
+total=0
+for i in ${!lines[@]}; do
+	mass=$(((lines[$i] / 3) - 2))
+	let total+=$mass
+done
+echo $total

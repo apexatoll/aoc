@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#file="testinput"
+file="input"
+last=$(($(cat $file | wc -l) + 1))
+changed=()
+index=1
+
+i=1
+while [ $index -lt $last ]; do
+	echo attempt $i
+	let i+=1
+	index=1; acc=0; ran=(); newRoute=false
+	while [ "${ran[$index]}" != true ]; do
+		ran[$index]=true
+		line=$(sed -n "$index"p  $file)
+		x=$(echo "$line" | sed -E 's/^[^-^+^0-9]*//g')
+		if [ $newRoute == false ] && [ "${changed[$index]}" != true ]; then
+			case $line in
+				jmp*) line=$(echo $line | sed 's/jmp/nop/g');;
+				nop*) line=$(echo $line | sed 's/nop/jmp/g');;
+			esac
+			changed[$index]=true
+			newRoute=true
+		fi
+		case $line in 
+			nop*) let index+=1 ;;
+			acc*) let index+=1; acc=$(echo "$acc$x" | bc);;
+			jmp*) index=$(echo "$index$x" | bc);;
+		esac
+	done
+done
+echo $acc

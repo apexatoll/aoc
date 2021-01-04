@@ -1,0 +1,17 @@
+#!/bin/bash
+
+input="iwrupvqb"
+#num=0
+for i in $(seq 1 1000000); do
+	check="$input$i"
+	#echo $check
+	hashed=$(md5 -q -s "$check")
+	echo "$hashed $check" >> keys
+	#if echo $hashed | grep -e "^(0){5}"; then
+	#if [[ $hashed == "00000*" ]]; then
+		#break;
+	#else
+		#let num+=1
+	#fi
+done
+echo $num

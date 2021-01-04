@@ -1,0 +1,14 @@
+#!/bin/bash
+
+num=0
+read -rd '' -a input<<<$(sed -E 's/([\(\)])/\1 /g' input)
+for i in ${!input[@]}; do
+	cmd=${input[$i]}
+	case $cmd in
+		\) ) let num-=1;;
+		\( ) let num+=1;;
+	esac
+	if [ $num -lt 0 ]; then break; fi
+done
+result=$((i + 1))
+echo $result

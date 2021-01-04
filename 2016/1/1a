@@ -1,0 +1,30 @@
+#!/bin/bash
+
+read -rd '' -a cmds<<<$(cat input | sed 's/,//g')
+x=0; y=0; facing="N"
+for i in ${!cmds[@]}; do
+	cmd=${cmds[$i]}
+	num=$(echo $cmd | sed 's/[^0-9]//g')
+	case $facing in
+		N) case $cmd in
+			L*) x=$((x - num)); facing="W";;
+			R*) x=$((x + num)); facing="E";;
+			esac;;
+		E) case $cmd in
+			L*) y=$((y + num)); facing="N";;
+			R*) y=$((y - num)); facing="S";;
+			esac;;
+		S) case $cmd in
+			L*) x=$((x + num)); facing="E";;
+			R*) x=$((x - num)); facing="W";;
+			esac;;
+		W) case $cmd in 
+			L*) y=$((y - num)); facing="S";;
+			R*) y=$((y + num)); facing="N";;
+			esac;;
+	esac
+done
+if [ $x -lt 0 ]; then x=$((x * -1)); fi
+if [ $y -lt 0 ]; then y=$((y * -1)); fi
+result=$((x + y))
+echo $result

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+IFS="," read -rd '' -a inputs<<<$(cat input)
+index=0
+inputs[1]=12
+inputs[2]=2
+while :; do
+	cmd=${inputs[$index]}
+	if [ $cmd == 99 ]; then break; fi
+	num1=${inputs[$index + 1]}
+	num2=${inputs[$index + 2]}
+	num3=${inputs[$index + 3]}
+	case $cmd in
+		1) result=$((inputs[$num1] + inputs[$num2]));;
+		2) result=$((inputs[$num1] * inputs[$num2]));;
+	esac
+	inputs[$num3]=$result
+	let index+=4
+done
+echo ${inputs[0]}

@@ -1,0 +1,53 @@
+#!/bin/bash
+
+read -rd '' -a cmds<<<$(cat input | sed 's/,//g')
+x=0; y=0; facing="N"
+#travelled=("0,0")
+travelled=()
+
+for i in ${!cmds[@]}; do
+	cmd=${cmds[$i]}
+	num=$(echo $cmd | sed 's/[^0-9]//g')
+	case $facing in
+		N) case $cmd in
+			L*) newx=$((x - num)); move="x"; newy=$y; facing="W";;
+			R*) newx=$((x + num)); move="x"; newy=$y; facing="E";;
+			esac;;
+		E) case $cmd in
+			L*) newy=$((y + num)); move="y"; newx=$x; facing="N";;
+			R*) newy=$((y - num)); move="y"; newx=$x; facing="S";;
+			esac;;
+		S) case $cmd in
+			L*) newx=$((x + num)); move="x"; newy=$y; facing="E";;
+			R*) newx=$((x - num)); move="x"; newy=$y; facing="W";;
+			esac;;
+		W) case $cmd in 
+			L*) newy=$((y - num)); move="y"; newx=$x; facing="S";;
+			R*) newy=$((y + num)); move="y"; newx=$x; facing="N";;
+			esac;;
+	esac
+	case $move in
+		"x") for j in $(seq $x $newx); do
+				coord="$j, $y"
+				if echo "${travelled[@]}" | grep -q -w "$coord"; then
+					x=$j
+					result=$coord
+					#break 2
+				fi
+				travelled+=("$coord")
+			done;;
+		"y") for l in $(seq $y $newy); do
+				coord="$x, $l"
+				if echo "${travelled[@]}" | grep -q -w "$coord"; then
+					y=$l
+					result=$coord
+					#break 2
+				fi
+				travelled+=("$coord")
+			done;;
+	esac
+	x=$newx
+	y=$newy
+done
+#echo $result
+printf "%s\n" "${travelled[@]}"

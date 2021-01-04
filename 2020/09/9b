@@ -1,0 +1,26 @@
+#!/bin/bash
+
+IFS=$'\n' read -rd '' -a allNumbers<<<$(cat input)
+target=85848519
+startIndex=0
+while :; do
+	total=${allNumbers[$startIndex]}
+	index=$((startIndex + 1))
+	while [ "$total" -lt "$target"  ]; do
+		total=$((total + ${allNumbers[$index]}))
+		if [ $total == $target ]; then break 2; fi
+		let index+=1
+	done
+	let startIndex+=1
+done
+
+length=$((index - startIndex))
+range=(${allNumbers[@]:$startIndex:$length})
+min=${range[0]}; max=${range[0]}
+
+for i in ${!range[@]}; do
+	if [ ${range[$i]} -lt $min ]; then min=${range[$i]}
+	elif [ ${range[$i]} -gt $max ]; then max=${range[$i]}; fi;
+done
+
+echo $((min + max))

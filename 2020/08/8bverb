@@ -1,0 +1,51 @@
+#!/bin/bash
+
+file="testinput"
+last=$(("$(wc -l "$file")" + 1))
+changed=()
+
+#Checkpoint 1
+for i in {1..20}; do
+	index=1; acc=0; ran=(); newRoute=false
+	#echo Route attempt $i...
+	#Checkpoint 2
+	while [ "${ran[$index]}" != true ]; do
+		ran[$index]=true
+		line=$(sed -n "$index"p  $file)
+		printf "\t%s\n" "$line"
+		x=$(echo "$line" | sed -E 's/^[^-^+^0-9]*//g')
+		case $line in 
+			#Checkpoint 3
+			nop*|jmp*)
+				if [ $newRoute == false ]; then
+					#Checkpoint 4
+					echo We havent changed a line yet
+					if [ "${changed[$index]}" != true ]; then
+						#Checkpoint 5
+						echo We haven\'t tried changing this line 
+						echo Adding to changed array
+						echo Run the swap action code
+						changed[$index]=true
+						newRoute=true
+					else 
+						#Checkpoint 6
+						echo We have already tried changing this line
+					fi
+				else
+					#Checkpoint 7
+					echo We have already changed a line for this loop
+				fi
+				;;&
+			nop*) 
+				let index+=1
+				;;
+			acc*) 
+				let index+=1
+				acc=$(echo "$acc$x" | bc);;
+			jmp*) 
+				index=$(echo "$index$x" | bc)
+				;;
+		esac
+	done
+done
+echo $last

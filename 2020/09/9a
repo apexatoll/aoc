@@ -1,0 +1,22 @@
+#!/bin/bash
+
+IFS=$'\n' read -rd '' -a allNumbers<<<$(cat input)
+index=0
+length=25
+valid=true
+while [ $valid == true ]; do
+	valid=false
+	numIndex=$((index + length))
+	pre=("${allNumbers[@]:$index:25}")
+	num="${allNumbers[$numIndex]}"
+	for i in $(seq 1 $length); do
+		search=$((num - pre[$i]))
+		if $(echo ${pre[@]} | grep -q -w "$search" &> /dev/null); then
+			echo this number is valid
+			valid=true
+			break
+		fi
+	done
+	let index+=1
+done
+echo $num

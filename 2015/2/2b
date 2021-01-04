@@ -1,0 +1,11 @@
+#!/bin/bash
+
+total=0
+while read line; do
+	IFS='x' read -rd '' -a dimensions<<<$(echo $line)
+	IFS=$'\n' dim=($(sort -n <<<"${dimensions[*]}"))
+	perim=$(((2 * ${dim[0]}) + (2 * ${dim[1]})))
+	vol=$((${dim[0]} * ${dim[1]} * ${dim[2]}))
+	total=$((total + perim + vol))
+done < input
+echo $total

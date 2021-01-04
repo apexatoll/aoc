@@ -1,0 +1,28 @@
+#!/bin/bash
+
+IFS=" " read -rd '' -a input<<<$(sed -E 's/(.)/\1 /g' input)
+houses=()
+sPos=(0 0)
+rPos=(0 0)
+for i in ${!input[@]}; do
+	cmd=${input[$i]}
+	if [ $((i % 2)) == 0 ]; then
+		case $cmd in
+			\>) sPos[0]="$((${sPos[0]} + 1))";;
+			\<) sPos[0]="$((${sPos[0]} - 1))";;
+			^)  sPos[1]="$((${sPos[1]} + 1))";;
+			v)  sPos[1]="$((${sPos[1]} - 1))";;
+		esac
+		curPos="${sPos[0]},${sPos[1]}"
+	else
+		case $cmd in
+			\>) rPos[0]="$((${rPos[0]} + 1))";;
+			\<) rPos[0]="$((${rPos[0]} - 1))";;
+			^)  rPos[1]="$((${rPos[1]} + 1))";;
+			v)  rPos[1]="$((${rPos[1]} - 1))";;
+		esac
+		curPos="${rPos[0]},${rPos[1]}"
+	fi
+	houses+=("$curPos")
+done
+printf "%s\n" ${houses[@]} | sort | uniq | wc -l

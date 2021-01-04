@@ -1,0 +1,115 @@
+#!/bin/bash
+
+read -rd '' -a cmds<<<$(cat example3 | sed 's/,//g')
+x=0; y=0; facing="N"
+#travelled=("0,0")
+travelled=()
+
+inArray(){
+	echo ${travelled[@]}
+	#if $(echo "${travelled[@]}" | grep -q -w "$1" &> /dev/null); then return 0 
+	#fi
+}
+
+for i in ${!cmds[@]}; do
+	cmd=${cmds[$i]}
+	num=$(echo $cmd | sed 's/[^0-9]//g')
+	case $facing in
+		N) case $cmd in
+			L*) newx=$((x - num)); move="x"; newy=$y; facing="W";;
+			R*) newx=$((x + num)); move="x"; newy=$y; facing="E";;
+			esac;;
+		E) case $cmd in
+			L*) newy=$((y + num)); move="y"; newx=$x; facing="N";;
+			R*) newy=$((y - num)); move="y"; newx=$x; facing="S";;
+			esac;;
+		S) case $cmd in
+			L*) newx=$((x + num)); move="x"; newy=$y; facing="E";;
+			R*) newx=$((x - num)); move="x"; newy=$y; facing="W";;
+			esac;;
+		W) case $cmd in 
+			L*) newy=$((y - num)); move="y"; newx=$x; facing="S";;
+			R*) newy=$((y + num)); move="y"; newx=$x; facing="N";;
+			esac;;
+	esac
+	it=0
+	case $move in
+		"x") for j in $(seq $x $newx); do
+			if [ $it > 0 ]; then
+				coord="$j, $y"
+				echo $coord
+				if echo "${travelled[@]}" | grep -q -w "$coord"; then
+					#result=$coord
+					x=$j
+					break 2
+				else
+					travelled+=("$coord")
+				fi
+			fi
+				it=1
+			done;;
+		"y") for l in $(seq $y $newy); do
+			if [ $it > 0 ]; then
+			coord="$x, $l"
+			echo $coord
+			if echo "${travelled[@]}" | grep -q -w "$coord"; then
+				y=$l
+				break 2
+			else
+				travelled+=("$coord")
+			fi
+				it=1
+			done;;
+	esac
+	x=$newx
+	y=$newy
+done
+echo $x $y
+#printf "%s\n" "${travelled[@]}"
+#echo $newx $newy
+#echo $x $y
+#if [ $x -lt 0 ]; then x=$((x * -1)); fi
+#if [ $y -lt 0 ]; then y=$((y * -1)); fi
+#result=$((x + y))
+#echo $result
+	#case $facing in 
+		#N) for j in $(seq $y $newy); do
+				#coord="$x,$j"
+				##if [[ "${travelled[@]}" =~ "$coord" ]]; then 
+				#if echo ${travelled[@]} | grep -w "$coord"; then 
+					##y=$j
+					#echo $coord
+					#break 2
+				#fi
+				#travelled+=("$coord")
+			#done;;
+		#E) for j in $(seq $x $newx); do
+				#coord="$j,$y"
+				##if [[ "${travelled[@]}" =~ "$coord" ]]; then 
+				#if echo ${travelled[@]} | grep -w "$coord"; then 
+					##x=$j
+					#echo $coord
+					#break 2
+				#fi
+				#travelled+=("$coord")
+			#done;;
+		#S) for j in $(seq $y $newy); do
+				#coord="$x,$j"
+				##if [[ "${travelled[@]}" =~ "$coord" ]]; then 
+				#if echo ${travelled[@]} | grep -w "$coord"; then 
+					##y=$j
+					#echo $coord
+					#break 2
+				#fi
+				#travelled+=("$coord")
+			#done;;
+		#W) for j in $(seq $x $newx); do
+				#coord="$j,$y"
+				##if [[ "${travelled[@]}" =~ "$coord" ]]; then 
+				#if echo ${travelled[@]} | grep -w "$coord"; then 
+					#echo $coord
+					##x=$
+					#break 2; 
+				#fi
+				#travelled+=("$coord")
+			#done;;

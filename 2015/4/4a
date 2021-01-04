@@ -1,0 +1,16 @@
+#!/bin/bash
+
+input="iwrupvqb"
+num=0
+while :; do
+	check="$input$num"
+	echo $check
+	hashed=$(md5 -q -s "$check")
+	#if echo $hashed | grep -e "^(0){5}"; then
+	if [[ $hashed == "00000*" ]]; then
+		break;
+	else
+		let num+=1
+	fi
+done
+echo $num

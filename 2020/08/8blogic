@@ -1,20 +1,21 @@
 #!/bin/bash
 
 file="testinput"
+last=$(($(cat $file | wc -l) + 1))
+echo $last
+let last+=1
 changed=()
+index=1
 
-#Checkpoint 1
-for i in {1..5}; do
+while [ $index -lt $last ]; do
+	#for i in {1..5}; do
 	index=1; acc=0; ran=(); newRoute=false
-	echo Route attempt $i...
-	#Checkpoint 2
 	while [ "${ran[$index]}" != true ]; do
 		ran[$index]=true
 		line=$(sed -n "$index"p  $file)
 		printf "\t%s\n" "$line"
 		x=$(echo "$line" | sed -E 's/^[^-^+^0-9]*//g')
 		case $line in 
-			#Checkpoint 3
 			nop*|jmp*)
 				if [ $newRoute == false ]; then
 					#Checkpoint 4
@@ -23,14 +24,21 @@ for i in {1..5}; do
 						#Checkpoint 5
 						echo We haven\'t tried changing this line 
 						echo Adding to changed array
-						echo Run the swap action code
 						changed[$index]=true
+						echo Run the swap action code
+						case $line in
+							jmp*) line=$(echo $line | sed 's/jmp/nop/g');;
+							nop*) line=$(echo $line | sed 's/nop/jmp/g');;
+						esac
+						echo $line
 						newRoute=true
 					else 
+						echo
 						#Checkpoint 6
 						echo We have already tried changing this line
 					fi
 				else
+					echo
 					#Checkpoint 7
 					echo We have already changed a line for this loop
 				fi
@@ -47,3 +55,4 @@ for i in {1..5}; do
 		esac
 	done
 done
+echo $last

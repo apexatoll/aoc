@@ -1,0 +1,16 @@
+=begin
+	start at min, get the exclusion min and store it
+	go to next value, check exclusion min value
+		if it is lower - go to next value
+		else if it is higher, check whether min value is in range of previous entry (ie there is a chain) or if it is plus 1
+		eg 43  -  70
+		   56  -  80
+		   here 80 is largerm and 56 is in range 43 - 70 so new max is 80
+		   chain is 43 - 80
+		eg 38  -  46
+		   49  -  70
+		   here 49 is not in previous so 38 - 48 is chain, next chain starts at 49
+		eg 49 - 87
+		   65 - 70
+		   here 70 is not larger than 87 so skip this value
+=end

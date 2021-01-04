@@ -1,0 +1,54 @@
+#!/bin/bash
+
+IFS=$'\n' read -rd '' -a lines <<< $(cat example)
+lX=${#lines[0]}
+lY=${#lines[@]}
+main(){
+	n=1; changed=true
+	while [ "$changed" == true ]; do
+		echo Iteration $n
+		buffer=()
+		changed=false
+		for l in $(seq 0 $((lY - 1))); do
+			for k in $(seq 0 $((lX - 1))); do
+				count $k $l
+			done
+			buffer+=("$(printf "%s" "${line[@]}")")
+			unset line
+		done
+		IFS=$'\n' read -rd '' -a lines<<<$(printf "%s\n" ${buffer[@]})
+		let n+=1
+	done
+	printf "%s" "${lines[@]}" | sed 's/[^#]//g' | wc -m
+}
+getChar(){
+	x=$1; y=$2
+	char=${lines[$2]:$1:1}
+}
+count(){
+	empty=0; occ=0
+	getChar $1 $2
+	current=$char
+	if [ $current != "." ]; then
+		for i in -1 0 1; do
+			for j in -1 0 1; do
+				x=$(($1 + i))
+				y=$(($2 + j))
+				if [ $x -ge 0 -a $x -lt $lX ] && [ $y -ge 0 -a $y -lt $lY ]; then
+					if [ $i != 0 ] || [ $j != 0 ]; then
+						getChar $x $y
+						case $char in
+							"#") let occ+=1;;
+						esac
+					fi
+				fi
+			done
+		done
+		case $current in
+			"L") if [ "$occ" == 0 ]; then next="#"; changed=true; else next=$current; fi;;
+			"#") if [ "$occ" -ge 4 ]; then next="L"; changed=true; else next=$current; fi;;
+		esac
+	else next="."; fi
+	line+=("$next")
+}
+main; exit

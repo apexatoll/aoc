@@ -1,0 +1,27 @@
+#!/bin/bash
+
+target=19690720
+for i in $(seq 0 99); do
+	for j in $(seq 0 99); do
+		index=0
+		IFS="," read -rd '' -a inputs<<<$(cat input)
+		inputs[1]="$i"
+		inputs[2]="$j"
+		while :; do
+			cmd=${inputs[$index]}
+			if [ $cmd == 99 ]; then break; fi
+			num1=${inputs[$index + 1]}
+			num2=${inputs[$index + 2]}
+			num3=${inputs[$index + 3]}
+			case $cmd in
+				1) result=$((inputs[$num1] + inputs[$num2]));;
+				2) result=$((inputs[$num1] * inputs[$num2]));;
+			esac
+			inputs["$num3"]=$result
+			let index+=4
+		done
+		if [ ${inputs[0]} == $target ]; then break 2; fi;
+	done
+done
+output=$(((100 * i) + j))
+echo $output
