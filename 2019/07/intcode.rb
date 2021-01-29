@@ -2,13 +2,13 @@ class Intcode
 	attr_accessor :index, :cmds, :input, :output, :phase, :complete
 	def initialize
 		@index = 0
-		@output = Array.new
+		@output = []
 		@phased = false
 		@complete = false
 		load_cmds
 	end
-	def load_cmds(file = "example")
-		@cmds = File.read(file).split(",").map(&:to_i)
+	def load_cmds
+		@cmds = File.read("input").split(",").map(&:to_i)
 	end
 	def get_instruction
 		ins = @cmds[@index].to_s.split("").reverse.map(&:to_i)
@@ -20,14 +20,12 @@ class Intcode
 	end
 	def get_num(mode, index)
 		case mode
-		when 0
-			return @cmds[@cmds[index]]
-		when 1
-			return @cmds[index]
+		when 0 then @cmds[@cmds[index]]
+		when 1 then @cmds[index]
 		end
 	end
 	def get_add(index)
-		return @cmds[index]
+		@cmds[index]
 	end
 	def write_value(val, addr)
 		@cmds[addr] = val
@@ -62,7 +60,6 @@ class Intcode
 				n1 = get_num(md1, @index + 1)
 				@output << n1
 				@index += 2
-				#return n1
 			when 5
 				n1 = get_num(md1, @index + 1)
 				n2 = get_num(md2, @index + 2)
@@ -87,7 +84,7 @@ class Intcode
 				@complete = true
 				break
 			end
-				return @output.join.to_i
+			return @output.join.to_i
 		end
 	end
 end

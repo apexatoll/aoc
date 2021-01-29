@@ -14,8 +14,8 @@ class Solve
 		bignum % smallnum == 0 ? true : false
 	end
 	def get_elves(house_number)
-		max_f = (house_number.to_f**0.5).floor
-		(1..max_f).to_a
+		#max_f = (house_number.to_f**0.5).floor
+		(1..house_number).to_a
 			.map{|f| f if factor? house_number, f}
 			.push(house_number)
 			.reject{|f| f == nil}

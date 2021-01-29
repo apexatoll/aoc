@@ -1,11 +1,11 @@
-require "./intcode.rb"
+require_relative "intcode"
 class Amplifiers
-	attr_accessor :perms
+	#attr_accessor :perms
 	def get_permutations
-		@perms = (0..4).to_a.permutation(5).to_a.map{|p| p}
+		@perms = (0..4).to_a.permutation(5).to_a
 	end
 	def get_max
-		@signals = Array.new
+		@signals = []
 		@perms.each do |p|
 			@signal = 0
 			p.each do |phase|
@@ -16,9 +16,9 @@ class Amplifiers
 				@signals << @signal
 			end
 		end
-		print @signals.sort.last
+		@signals.max
 	end
 end
 amps = Amplifiers.new
 amps.get_permutations
-amps.get_max
+puts amps.get_max
