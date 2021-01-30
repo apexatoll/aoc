@@ -2,9 +2,7 @@
 -------------------------------
 
 It's no use; your navigation system simply isn't capable of providing
-<span
-title="At the iceberg, use any lane to turn left. Then, swim for eight thousand miles.">walking
-directions</span> in the arctic circle, and certainly not in 1018.
+walking directions in the arctic circle, and certainly not in 1018.
 
 The Elves suggest an alternative. In times like these, North Pole rescue
 operations will arrange points of light in the sky to guide missing
@@ -160,4 +158,18 @@ message will be much longer and will take many more seconds to appear.
 
 *What message will eventually appear in the sky?*
 
-To begin, [get your puzzle input](10/input).
+Your puzzle answer was `CPJRNKCF`.
+
+The first half of this puzzle is complete! It provides one gold star: \*
+
+--- Part Two ---
+----------------
+
+Good thing you didn't have to wait, because that would have taken a long
+time - much longer than the `3` seconds in the example above.
+
+Impressed by your sub-hour communication capabilities, the Elves are
+curious: *exactly how many seconds would they have needed to wait for
+that message to appear?*
+
+Answer:

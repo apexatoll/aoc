@@ -2,14 +2,12 @@
 -------------------------
 
 Your ferry made decent progress toward the island, but the storm came in
-<span title="At least it wasn't a Category Six!">faster than anyone
-expected</span>. The ferry needs to take *evasive actions*!
+faster than anyone expected. The ferry needs to take *evasive actions*!
 
 Unfortunately, the ship's navigation computer seems to be
 malfunctioning; rather than giving a route directly to safety, it
 produced extremely circuitous instructions. When the captain uses the
-[PA system](https://en.wikipedia.org/wiki/Public_address_system) to ask
-if anyone can help, you quickly volunteer.
+[PA system][] to ask if anyone can help, you quickly volunteer.
 
 The navigation instructions (your puzzle input) consists of a sequence
 of single-character *actions* paired with integer input *values*. After
@@ -48,10 +46,9 @@ These instructions would be handled as follows:
     *south*; it remains at *east 17, north 3*.
 -   `F11` would move the ship 11 units south to *east 17, south 8*.
 
-At the end of these instructions, the ship's [Manhattan
-distance](https://en.wikipedia.org/wiki/Manhattan_distance) (sum of the
-absolute values of its east/west position and its north/south position)
-from its starting position is `17 + 8` = *`25`*.
+At the end of these instructions, the ship's [Manhattan distance][] (sum
+of the absolute values of its east/west position and its north/south
+position) from its starting position is `17 + 8` = *`25`*.
 
 Figure out where the navigation instructions lead. *What is the
 Manhattan distance between that location and the ship's starting
@@ -112,3 +109,6 @@ Your puzzle answer was `101860`.
 
 Both parts of this puzzle are complete! They provide two gold stars:
 \*\*
+
+  [PA system]: https://en.wikipedia.org/wiki/Public_address_system
+  [Manhattan distance]: https://en.wikipedia.org/wiki/Manhattan_distance

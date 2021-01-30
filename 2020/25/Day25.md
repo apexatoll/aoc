@@ -8,12 +8,11 @@ the way! They even created all the room keys this morning; you can take
 yours now and give them your room deposit once the registration system
 comes back online.
 
-The room key is a small
-[RFID](https://en.wikipedia.org/wiki/Radio-frequency_identification)
-card. Your room is on the 25th floor and the elevators are also
-temporarily out of service, so it takes what little energy you have left
-to even climb the stairs and navigate the halls. You finally reach the
-door to your room, swipe your card, and - *beep* - the light turns red.
+The room key is a small [RFID][] card. Your room is on the 25th floor
+and the elevators are also temporarily out of service, so it takes what
+little energy you have left to even climb the stairs and navigate the
+halls. You finally reach the door to your room, swipe your card, and -
+*beep* - the light turns red.
 
 Examining the card more closely, you discover a phone number for tech
 support.
@@ -97,16 +96,13 @@ The first half of this puzzle is complete! It provides one gold star: \*
 --- Part Two ---
 ----------------
 
-<span
-title="You notice the brand written on the side of the lock: Diffie, Hellman, and Merkle.">The
-light turns green and the door unlocks.</span> As you collapse onto the
-bed in your room, your pager goes off!
+The light turns green and the door unlocks. As you collapse onto the bed
+in your room, your pager goes off!
 
-"It's an emergency!" the Elf calling you explains. "The [soft
-serve](https://en.wikipedia.org/wiki/Soft_serve) machine in the
-cafeteria on sub-basement 7 just failed and you're the only one that
-knows how to fix it! We've already dispatched a reindeer to your
-location to pick you up."
+"It's an emergency!" the Elf calling you explains. "The [soft serve][]
+machine in the cafeteria on sub-basement 7 just failed and you're the
+only one that knows how to fix it! We've already dispatched a reindeer
+to your location to pick you up."
 
 You hear the sound of hooves landing on your balcony.
 
@@ -123,3 +119,6 @@ Looks like you only needed *49 stars* after all.
 
 You don't have enough stars to pay the deposit, though. You need 10
 more.
+
+  [RFID]: https://en.wikipedia.org/wiki/Radio-frequency_identification
+  [soft serve]: https://en.wikipedia.org/wiki/Soft_serve
