@@ -51,6 +51,22 @@ mod solution {
         pub fn is_possible(&self) -> bool {
             self.sets.iter().all(|set| set.is_possible())
         }
+
+        pub fn minimum_set_power(&self) -> usize {
+            self.max_red() * self.max_green() * self.max_blue()
+        }
+
+        fn max_red(&self) -> usize {
+            self.sets.iter().map(|set| set.n_red).max().unwrap()
+        }
+
+        fn max_green(&self) -> usize {
+            self.sets.iter().map(|set| set.n_green).max().unwrap()
+        }
+
+        fn max_blue(&self) -> usize {
+            self.sets.iter().map(|set| set.n_blue).max().unwrap()
+        }
     }
 
     impl FromStr for Game {
@@ -78,10 +94,19 @@ mod solution {
             .map(|game| game.id)
             .sum()
     }
+
+    pub fn part_two(input: &str) -> usize {
+        input
+            .lines()
+            .map(|line| Game::from_str(line).unwrap())
+            .map(|game| game.minimum_set_power())
+            .sum()
+    }
 }
 
 fn main() {
     let input = include_str!("../input");
 
     println!("Part one: {}", solution::part_one(input));
+    println!("Part two: {}", solution::part_two(input));
 }
