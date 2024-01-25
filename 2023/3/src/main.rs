@@ -38,6 +38,10 @@ impl<'a> Cell {
     fn is_symbol(&self) -> bool {
         !self.is_digit() && self.value != '.'
     }
+
+    fn is_asterisk(&self) -> bool {
+        self.value == '*'
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -77,6 +81,28 @@ impl<'a> Number<'a> {
     }
 }
 
+#[derive(Clone, Debug)]
+struct Gear<'a> {
+    cell: &'a Cell,
+    numbers: Vec<Number<'a>>,
+}
+
+impl<'a> Gear<'a> {
+    pub fn ratio(&self) -> usize {
+        self.adjacent_numbers()
+            .iter()
+            .map(|number| number.value())
+            .product()
+    }
+
+    pub fn adjacent_numbers(&self) -> Vec<&Number> {
+        self.numbers
+            .iter()
+            .filter(|number| number.adjacent_cells().contains(&self.cell))
+            .collect()
+    }
+}
+
 #[derive(Debug)]
 struct Schematic {
     matrix: Matrix<Cell>,
@@ -102,6 +128,14 @@ impl Schematic {
             .filter(|number| number.is_part_number())
             .cloned()
             .collect::<Vec<Number>>()
+    }
+
+    pub fn gears(&self) -> Vec<Gear> {
+        self.scan_gears()
+            .iter()
+            .filter(|gear| gear.adjacent_numbers().len() == 2)
+            .cloned()
+            .collect::<Vec<Gear>>()
     }
 
     pub fn is_in_bounds(&self, y: i32, x: i32) -> bool {
@@ -131,6 +165,14 @@ impl Schematic {
         }
 
         numbers
+    }
+
+    fn scan_gears(&self) -> Vec<Gear> {
+        self.matrix
+            .iter()
+            .flat_map(|row| row.iter().filter(|cell| cell.is_asterisk()))
+            .map(|cell| Gear { cell, numbers: self.part_numbers() })
+            .collect()
     }
 }
 
@@ -163,8 +205,19 @@ fn part_one(input: &str) -> usize {
         .sum()
 }
 
+fn part_two(input: &str) -> usize {
+    let schematic = Schematic::from_str(input).unwrap();
+
+    schematic
+        .gears()
+        .iter()
+        .map(|gear| gear.ratio())
+        .sum()
+}
+
 fn main() {
     let input = include_str!("../input");
 
     println!("Part one: {}", part_one(input));
+    println!("Part two: {}", part_two(input));
 }
