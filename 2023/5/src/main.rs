@@ -141,6 +141,16 @@ impl Almanac {
     fn next_map(&self, source_category: &Category) -> Option<&Map> {
         self.maps.iter().find(|map| map.source_category == *source_category)
     }
+
+    fn expand_seed_ranges(&mut self) {
+        let seeds = self
+            .seeds
+            .chunks(2)
+            .flat_map(|slice| (slice[0]..slice[0] + slice[1]).collect::<Vec<_>>())
+            .collect::<Vec<u64>>();
+
+        self.seeds = seeds;
+    }
 }
 
 impl FromStr for Almanac {
@@ -174,8 +184,17 @@ fn part_one(input: &str) -> u64 {
     *Almanac::from_str(input).unwrap().location_numbers().iter().min().unwrap()
 }
 
+fn part_two(input: &str) -> u64 {
+    let mut almanac = Almanac::from_str(input).unwrap();
+
+    almanac.expand_seed_ranges();
+
+    *almanac.location_numbers().iter().min().unwrap()
+}
+
 fn main() {
     let input = include_str!("../input");
 
     println!("Part one: {}", part_one(input));
+    println!("Part two: {}", part_two(input));
 }
