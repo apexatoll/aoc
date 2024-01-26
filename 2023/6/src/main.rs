@@ -6,6 +6,30 @@ struct Record {
     distance: usize,
 }
 
+impl Record {
+    fn from_kerning_str(str: &str) -> Self {
+        let (time_str, dist_str) = str.split_once("\n").unwrap();
+
+        let time = time_str
+            .strip_prefix("Time:")
+            .unwrap()
+            .replace(" ", "")
+            .trim()
+            .parse()
+            .unwrap();
+
+        let distance = dist_str
+            .strip_prefix("Distance:")
+            .unwrap()
+            .replace(" ", "")
+            .trim()
+            .parse()
+            .unwrap();
+
+        Self { time, distance }
+    }
+}
+
 struct Race {
     time: usize,
 }
@@ -75,10 +99,17 @@ fn part_one(input: &str) -> usize {
     Calculator::from_str(input).unwrap().calculate_product()
 }
 
+fn part_two(input: &str) -> usize {
+    let records = vec![Record::from_kerning_str(input)];
+
+    Calculator { records }.calculate_product()
+}
+
 fn main() {
     let input = include_str!("../input");
 
     println!("Part one: {}", part_one(input));
+    println!("Part two: {}", part_two(input));
 }
 
 mod tests {
@@ -87,8 +118,15 @@ mod tests {
 
     #[test]
     fn it_solves_part_one() {
-        let input = include_str!("../example");
+        let example = include_str!("../example");
 
-        assert_eq!(part_one(input), 288)
+        assert_eq!(part_one(example), 288);
+    }
+
+    #[test]
+    fn it_solves_part_two() {
+        let example = include_str!("../example");
+
+        assert_eq!(part_two(example), 71503);
     }
 }
