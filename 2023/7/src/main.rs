@@ -2,6 +2,7 @@ use itertools::Itertools;
 
 #[derive(Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
 enum Card {
+    Joker,
     Two,
     Three,
     Four,
@@ -20,6 +21,7 @@ enum Card {
 impl From<char> for Card {
     fn from(char: char) -> Self {
         match char {
+            '*' => Self::Joker,
             '2' => Self::Two,
             '3' => Self::Three,
             '4' => Self::Four,
@@ -52,6 +54,7 @@ enum HandType {
 impl From<&Vec<Card>> for HandType {
     fn from(cards: &Vec<Card>) -> Self {
         let card_counts = cards.iter().counts();
+        let joker_count = card_counts.get(&Card::Joker).unwrap_or(&0);
 
         let occurrences: [usize; 5] = cards
             .iter()
@@ -63,14 +66,46 @@ impl From<&Vec<Card>> for HandType {
             .unwrap();
 
         match occurrences {
-            [1, 1, 1, 1, 1] => Self::HighCard,
-            [1, 1, 1, 2, 2] => Self::OnePair,
-            [1, 2, 2, 2, 2] => Self::TwoPair,
-            [1, 1, 3, 3, 3] => Self::ThreeOfAKind,
-            [2, 2, 3, 3, 3] => Self::FullHouse,
-            [1, 4, 4, 4, 4] => Self::FourOfAKind,
+            [1, 1, 1, 1, 1] => match joker_count {
+                0 => Self::HighCard,
+                1 => Self::OnePair,
+                _ => unreachable!(),
+            },
+
+            [1, 1, 1, 2, 2] => match joker_count {
+                0   => Self::OnePair,
+                1|2 => Self::ThreeOfAKind,
+                _   => unreachable!(),
+            },
+
+            [1, 2, 2, 2, 2] => match joker_count {
+                0 => Self::TwoPair,
+                1 => Self::FullHouse,
+                2 => Self::FourOfAKind,
+                _ => unreachable!(),
+            },
+
+            [1, 1, 3, 3, 3] => match joker_count {
+                0   => Self::ThreeOfAKind,
+                1|3 => Self::FourOfAKind,
+                _   => unreachable!(),
+            },
+
+            [2, 2, 3, 3, 3] => match joker_count {
+                0   => Self::FullHouse,
+                2|3 => Self::FiveOfAKind,
+                _   => unreachable!(),
+            },
+
+            [1, 4, 4, 4, 4] => match joker_count {
+                0   => Self::FourOfAKind,
+                1|4 => Self::FiveOfAKind,
+                _   => unreachable!(),
+            }, 
+
             [5, 5, 5, 5, 5] => Self::FiveOfAKind,
-            value => unreachable!("Value is {:?}", value),
+
+            _ => unreachable!(),
         }
     }
 }
@@ -132,6 +167,12 @@ impl Game {
         Self { hands }
     }
 
+    fn with_jokers(input: String) -> Self {
+        let input = input.replace("J", "*");
+
+        Self::new(input)
+    }
+
     fn total_winnings(&self) -> usize {
         self.hands
             .iter()
@@ -145,63 +186,81 @@ fn part_one(input: &str) -> usize {
     Game::new(input.to_string()).total_winnings()
 }
 
+fn part_two(input: &str) -> usize {
+    Game::with_jokers(input.to_string()).total_winnings()
+}
+
 fn main() {
     let input = include_str!("../input");
 
     println!("Part one: {}", part_one(input));
+    println!("Part two: {}", part_two(input));
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    fn assert_hand_type(hands: Vec<&str>, hand_type: HandType) {
+        let hands: Vec<Hand> = hands
+            .iter()
+            .map(|&line| Hand::from(line))
+            .collect();
+
+        for hand in hands.iter() {
+            assert_eq!(hand.hand_type, hand_type);
+        }
+    }
+
     #[test]
     fn it_parses_five_of_a_kind() {
-        let hand = Hand::from("AAAAA 0");
+        let hands = vec![
+            "AAAAA 0", "AAAA* 0", "AAA** 0", "AA*** 0", "A**** 0", "***** 0"
+        ];
 
-        assert_eq!(hand.hand_type, HandType::FiveOfAKind);
+        assert_hand_type(hands, HandType::FiveOfAKind);
     }
 
     #[test]
     fn it_parses_four_of_a_kind() {
-        let hand = Hand::from("AAKAA 0");
+        let hands = vec!["AQAAA 0", "AATA* 0", "AA**Q 0", "A*T** 0"];
 
-        assert_eq!(hand.hand_type, HandType::FourOfAKind);
+        assert_hand_type(hands, HandType::FourOfAKind);
     }
 
     #[test]
     fn it_parses_full_house() {
-        let hand = Hand::from("KAKAA 0");
+        let hands = vec!["KAKAA 0", "KAKA* 0"];
 
-        assert_eq!(hand.hand_type, HandType::FullHouse);
+        assert_hand_type(hands, HandType::FullHouse);
     }
 
     #[test]
     fn it_parses_three_of_a_kind() {
-        let hand = Hand::from("KAQAA 0");
+        let hands = vec!["KAQAA 0", "KAQA* 0", "KAQ** 0"];
 
-        assert_eq!(hand.hand_type, HandType::ThreeOfAKind);
+        assert_hand_type(hands, HandType::ThreeOfAKind);
     }
 
     #[test]
     fn it_parses_two_pair() {
-        let hand = Hand::from("QAQKA 0");
+        let hands = vec!["QAQKA 0"];
 
-        assert_eq!(hand.hand_type, HandType::TwoPair);
+        assert_hand_type(hands, HandType::TwoPair);
     }
 
     #[test]
     fn it_parses_one_pair() {
-        let hand = Hand::from("QTQKA 0");
+        let hands = vec!["QTQKA 0", "QT*KA 0"];
 
-        assert_eq!(hand.hand_type, HandType::OnePair);
+        assert_hand_type(hands, HandType::OnePair);
     }
 
     #[test]
     fn it_parses_high_card() {
-        let hand = Hand::from("QT7KA 0");
+        let hands = vec!["QT7KA 0"];
 
-        assert_eq!(hand.hand_type, HandType::HighCard);
+        assert_hand_type(hands, HandType::HighCard);
     }
 
     #[test]
@@ -210,5 +269,13 @@ mod tests {
         let game = Game::new(example.to_string());
 
         assert_eq!(game.total_winnings(), 6440)
+    }
+
+    #[test]
+    fn it_solves_part_two() {
+        let example = include_str!("../example");
+        let game = Game::with_jokers(example.to_string());
+
+        assert_eq!(game.total_winnings(), 5905)
     }
 }
