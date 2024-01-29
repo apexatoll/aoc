@@ -109,16 +109,39 @@ impl<'a> Tree<'a> {
     }
 }
 
+mod maths {
+    pub fn lowest_common_multiple(a: usize, b: usize) -> usize {
+        a * b / greatest_common_factor(a, b)
+    }
+
+    fn greatest_common_factor(a: usize, b: usize) -> usize {
+        if b == 0 { a } else { greatest_common_factor(b, a % b) }
+    }
+}
+
 fn part_one(input: &str) -> usize {
     let tree = Tree::from(input);
 
     tree.step_until("AAA", |node| node.name == "ZZZ")
 }
 
+fn part_two(input: &str) -> usize {
+    let tree = Tree::from(input);
+
+    tree.nodes
+        .keys()
+        .copied()
+        .filter(|name| name.ends_with("A"))
+        .map(|name| tree.step_until(name, |node| node.name.ends_with("Z")))
+        .reduce(|a, b| maths::lowest_common_multiple(a, b))
+        .unwrap()
+}
+
 fn main() {
     let input = include_str!("../input");
 
     println!("Part one: {}", part_one(input));
+    println!("Part two: {}", part_two(input));
 }
 
 #[cfg(test)]
