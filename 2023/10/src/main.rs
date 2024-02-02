@@ -23,7 +23,7 @@ impl Direction {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 enum Tile {
     Vertical,
     Horizontal,
@@ -33,6 +33,28 @@ enum Tile {
     SouthEast,
     Ground,
     Start,
+}
+
+impl Tile {
+    fn is_corner(&self) -> bool {
+        match self {
+            Self::NorthEast |
+            Self::NorthWest |
+            Self::SouthEast |
+            Self::SouthWest => true,
+            _ => false
+        }
+    }
+
+    fn diagonal(&self) -> Option<Self> {
+        match self {
+            Self::NorthEast => Some(Self::SouthWest),
+            Self::NorthWest => Some(Self::SouthEast),
+            Self::SouthEast => Some(Self::NorthWest),
+            Self::SouthWest => Some(Self::NorthEast),
+            _ => None,
+        }
+    }
 }
 
 impl From<char> for Tile {
@@ -51,7 +73,7 @@ impl From<char> for Tile {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Cell {
     y: usize,
     x: usize,
@@ -142,13 +164,13 @@ impl From<&str> for Map {
 }
 
 impl Map {
-    fn extract_path(&self) -> Vec<&Cell>{
+    fn extract_path(&self) -> Vec<Cell>{
         let mut path = vec![];
         let mut cell = self.first_cell();
-        let mut dir  = self.first_direction(cell);
+        let mut dir  = self.first_directions()[0];
 
         while path.is_empty() || !cell.is_start() {
-            path.push(cell);
+            path.push(cell.clone());
 
             cell = self.adjacent_cell(cell, dir).unwrap();
 
@@ -156,6 +178,12 @@ impl Map {
 
             dir = cell.new_direction(dir);
         }
+
+        let first_tile = self.first_tile();
+
+        dbg!(&first_tile);
+
+        path[0].tile = first_tile;
 
         path
     }
@@ -170,16 +198,39 @@ impl Map {
             .unwrap()
     }
 
-    fn first_direction(&self, cell: &Cell) -> &Direction {
+    fn first_directions(&self) -> [&Direction; 2] {
+        let cell = self.first_cell();
+        let mut dirs = vec![];
+
         for direction in Direction::iter() {
             if let Some(adjacent) = self.adjacent_cell(cell, direction) {
                 if adjacent.has_inbound_direction(direction) {
-                    return direction;
+                    dirs.push(direction)
                 }
             }
         }
 
-        unreachable!();
+        dirs.try_into().unwrap()
+    }
+
+    fn first_tile(&self) -> Tile {
+        let [first, second] = self.first_directions();
+
+        match (first, second) {
+            (Direction::North, Direction::South) |
+            (Direction::South, Direction::North) => Tile::Vertical,
+            (Direction::East, Direction::West) |
+            (Direction::West, Direction::East) => Tile::Horizontal,
+            (Direction::North, Direction::East) |
+            (Direction::East, Direction::North) => Tile::NorthEast,
+            (Direction::North, Direction::West) |
+            (Direction::West, Direction::North) => Tile::NorthWest,
+            (Direction::South, Direction::East) |
+            (Direction::East, Direction::South) => Tile::SouthEast,
+            (Direction::South, Direction::West) |
+            (Direction::West, Direction::South) => Tile::SouthWest,
+            _ => unreachable!(),
+        }
     }
 
     fn adjacent_cell(&self, cell: &Cell, dir: &Direction) -> Option<&Cell> {
@@ -205,6 +256,74 @@ impl Map {
     }
 }
 
+struct AreaScanner {
+    path: Vec<Cell>,
+    height: usize,
+    width: usize,
+}
+
+impl From<&str> for AreaScanner {
+    fn from(str: &str) -> Self {
+        let map = Map::from(str);
+
+        Self {
+            path: map.extract_path(),
+            height: map.height,
+            width: map.width
+        }
+    }
+}
+
+impl AreaScanner {
+    fn calculate(&self) -> usize {
+        (0..self.height).fold(0, |sum, y| sum + self.scan_row(y))
+    }
+
+    fn scan_row(&self, y: usize) -> usize {
+        let mut in_loop = false;
+        let mut count = 0;
+        let mut last_corner = None;
+
+        for x in 0..self.width {
+            let tile = self.get_tile(y, x);
+
+            match (tile, last_corner) {
+                (Tile::Ground, _) if in_loop => {
+                    count += 1
+                },
+
+                (Tile::Vertical, _) => {
+                    in_loop = !in_loop
+                },
+
+                (this, None) if this.is_corner() => {
+                    last_corner = Some(this);
+                },
+
+                (this, Some(last)) if this.is_corner() => {
+                    last_corner = None;
+
+                    if last == &this.diagonal().unwrap() {
+                        in_loop = !in_loop
+                    }
+                },
+
+                _ => (),
+            }
+        }
+
+        count
+    }
+
+    fn get_tile(&self, y: usize, x: usize) -> &Tile {
+        self.path
+            .iter()
+            .find(|cell| cell.y == y && cell.x == x)
+            .and_then(|cell| Some(&cell.tile))
+            .unwrap_or(&Tile::Ground)
+    }
+}
+
 fn part_one(input: &str) -> usize {
     let map = Map::from(input);
     let path = map.extract_path();
@@ -212,8 +331,15 @@ fn part_one(input: &str) -> usize {
     path.len() / 2
 }
 
+fn part_two(input: &str) -> usize {
+    let scanner = AreaScanner::from(input);
+
+    scanner.calculate()
+}
+
 fn main() {
     let input = include_str!("../input");
 
     println!("Part one: {}", part_one(input));
+    println!("Part two: {}", part_two(input));
 }
