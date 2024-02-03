@@ -26,16 +26,12 @@ impl From<&str> for Image {
         let height = str.lines().count();
         let width = str.lines().next().unwrap().chars().count();
 
-        let mut image = Self { height, width, galaxies };
-
-        image.expand_space();
-
-        image
+        Self { height, width, galaxies }
     }
 }
 
 impl Image {
-    fn expand_space(&mut self) {
+    fn expand_spaces_by(&mut self, count: usize) {
         let blank_rows: Vec<usize> = (0..self.height).filter(|y|
             !self.galaxies.iter().any(|galaxy| &galaxy.y == y)
         ).collect();
@@ -45,11 +41,16 @@ impl Image {
         ).collect();
 
         for galaxy in self.galaxies.iter_mut() {
-            galaxy.y += blank_rows.iter().filter(|&col| col < &galaxy.y).count();
-            galaxy.x += blank_columns.iter().filter(|&col| col < &galaxy.x).count();
-        }
+            galaxy.y += count * blank_rows
+                .iter()
+                .filter(|&col| col < &galaxy.y)
+                .count();
 
-        dbg!(&self.galaxies);
+            galaxy.x += count * blank_columns
+                .iter()
+                .filter(|&col| col < &galaxy.x)
+                .count();
+        }
     }
 
     fn permutations(&self) -> Vec<(&Galaxy, &Galaxy)> {
@@ -75,7 +76,17 @@ impl Image {
 }
 
 fn part_one(input: &str) -> usize{
-    let image = Image::from(input);
+    let mut image = Image::from(input);
+
+    image.expand_spaces_by(1);
+
+    image.distances().iter().sum()
+}
+
+fn part_two(input: &str) -> usize{
+    let mut image = Image::from(input);
+
+    image.expand_spaces_by(999_999);
 
     image.distances().iter().sum()
 }
@@ -84,4 +95,5 @@ fn main() {
     let input = include_str!("../input");
 
     println!("Part one: {}", part_one(input));
+    println!("Part two: {}", part_two(input));
 }
